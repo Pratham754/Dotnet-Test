@@ -4,9 +4,11 @@ namespace Question2
 {
     class MainProgram
     {
-        #region Description
-        
+        #region State Management
+        // Holds the reference to the most recent patient bill
         static PatientBill? LastBill;
+        
+        // Tracking flag to ensure we don't try to access null data
         static bool HasLastBill = false;
         #endregion
 
@@ -15,8 +17,9 @@ namespace Question2
         {
             int choice;
 
-            do // Main menu loop
+            do 
             {
+                // UI Refresh for each menu interaction
                 Console.Clear();
                 Console.WriteLine("================== MediSure Clinic Billing ==================");
                 Console.WriteLine("1. Create New Bill (Enter Patient Details)");
@@ -25,14 +28,15 @@ namespace Question2
                 Console.WriteLine("4. Exit");
                 Console.Write("Enter your option: ");
 
+                // Validates that the user input is a number to prevent menu crashes
                 if (!int.TryParse(Console.ReadLine(), out choice))
                 {
-                    Console.WriteLine("Invalid option. Please enter a number.");
+                    Console.WriteLine("Invalid option. Please enter a numeric value.");
                     Console.ReadLine();
                     continue;
                 }
 
-                switch (choice) // Handle menu options
+                switch (choice) 
                 {
                     case 1:
                         CreateBill();
@@ -44,10 +48,10 @@ namespace Question2
                         ClearLastBill();
                         break;
                     case 4:
-                        Console.WriteLine("Thank you. Application closed normally.");
+                        Console.WriteLine("Thank you for using MediSure. Application closed.");
                         break;
                     default:
-                        Console.WriteLine("Invalid menu option. Try again.");
+                        Console.WriteLine("Invalid menu choice. Please select 1-4.");
                         Console.ReadLine();
                         break;
                 }
@@ -56,18 +60,19 @@ namespace Question2
         }
         #endregion
 
-        #region Methods
+        #region Operational Logic
         /// <summary>
-        /// Creates a new patient bill by taking user input.
+        /// Orchestrates the data collection and creation process for a PatientBill.
         /// </summary>
         static void CreateBill()
         {
+            // 1. Identification Input
             Console.Write("Enter Bill Id: ");
             string billId = Console.ReadLine() ?? "";
 
             if (string.IsNullOrWhiteSpace(billId))
             {
-                Console.WriteLine("Bill Id cannot be empty.");
+                Console.WriteLine("Error: Bill Id is a required field.");
                 Console.ReadLine();
                 return;
             }
@@ -75,14 +80,16 @@ namespace Question2
             Console.Write("Enter Patient Name: ");
             string patientName = Console.ReadLine() ?? "";
 
+            // 2. Insurance Logic: Simple string check to determine discount eligibility later
             Console.Write("Is the patient insured? (Y/N): ");
             string insuranceInput = Console.ReadLine() ?? "";
             bool hasInsurance = insuranceInput.Equals("Y", StringComparison.OrdinalIgnoreCase);
 
+            // 3. Financial Inputs with double-validation (Type check and Range check)
             Console.Write("Enter Consultation Fee: ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal consultationFee) || consultationFee <= 0)
             {
-                Console.WriteLine("Consultation Fee must be greater than 0.");
+                Console.WriteLine("Error: Consultation Fee must be a positive number.");
                 Console.ReadLine();
                 return;
             }
@@ -90,7 +97,7 @@ namespace Question2
             Console.Write("Enter Lab Charges: ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal labCharges) || labCharges < 0)
             {
-                Console.WriteLine("Lab Charges must be >= 0.");
+                Console.WriteLine("Error: Lab Charges cannot be negative.");
                 Console.ReadLine();
                 return;
             }
@@ -98,12 +105,12 @@ namespace Question2
             Console.Write("Enter Medicine Charges: ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal medicineCharges) || medicineCharges < 0)
             {
-                Console.WriteLine("Medicine Charges must be >= 0.");
+                Console.WriteLine("Error: Medicine Charges cannot be negative.");
                 Console.ReadLine();
                 return;
             }
 
-            // Create and calculate the bill
+            // 4. Object Instantiation and Calculation
             LastBill = new PatientBill
             {
                 BillId = billId,
@@ -114,41 +121,44 @@ namespace Question2
                 MedicineCharges = medicineCharges
             };
 
+            // Trigger internal business logic calculations
             LastBill.CalculateBill();
             HasLastBill = true;
 
-            Console.WriteLine("\nBill created successfully.");
-            Console.WriteLine($"Gross Amount: {LastBill.GrossAmount:F2}");
-            Console.WriteLine($"Discount Amount: {LastBill.DiscountAmount:F2}");
+            // Immediate summary display
+            Console.WriteLine("\n--- Billing Summary ---");
+            Console.WriteLine($"Gross Amount:  {LastBill.GrossAmount:F2}");
+            Console.WriteLine($"Discount:      {LastBill.DiscountAmount:F2}");
             Console.WriteLine($"Final Payable: {LastBill.FinalPayable:F2}");
-            Console.WriteLine("------------------------------------------------------------");
+            Console.WriteLine("------------------------");
             Console.ReadLine();
         }
 
         /// <summary>
-        /// Displays the last bill details.
+        /// Retrieves and displays the bill stored in the current session.
         /// </summary>
         static void ViewLastBill()
         {
             if (!HasLastBill)
             {
-                Console.WriteLine("No bill available. Please create a new bill first.");
+                Console.WriteLine("No bill history found in current session.");
             }
             else
             {
+                // The '!' tells the compiler we've already checked that LastBill is not null
                 LastBill!.PrintBill();
             }
             Console.ReadLine();
         }
 
         /// <summary>
-        /// Clears the last bill details.
+        /// Resets the application state by removing the current bill reference.
         /// </summary>
         static void ClearLastBill()
         {
             LastBill = null;
             HasLastBill = false;
-            Console.WriteLine("Last bill cleared.");
+            Console.WriteLine("Patient billing record cleared successfully.");
             Console.ReadLine();
         }
         #endregion

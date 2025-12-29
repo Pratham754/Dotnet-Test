@@ -4,8 +4,11 @@ namespace Question1
 {
     class Program
     {
-        #region Description
+        #region State Variables
+        // Holds the data for the most recent transaction; nullable in case no transaction exists yet
         static SaleTransaction? LastTransaction;
+        
+        // A flag to quickly check if a transaction has been created in the current session
         static bool HasLastTransaction = false;
         #endregion
 
@@ -14,7 +17,7 @@ namespace Question1
         {
             int choice;
 
-            // Main menu loop
+            // Main menu loop: keeps the application running until the user selects 'Exit'
             do
             {
                 Console.Clear();
@@ -25,14 +28,16 @@ namespace Question1
                 Console.WriteLine("4. Exit");
                 Console.Write("Enter your option: ");
 
+                // Validate that the input is an integer to prevent crashes
                 if (!int.TryParse(Console.ReadLine(), out choice))
                 {
-                    Console.WriteLine("Invalid input.");
+                    Console.WriteLine("Invalid input. Please enter a number between 1 and 4.");
                     Console.ReadLine();
                     continue;
                 }
 
-                switch (choice) // Handle user choice
+                // Route the user to the appropriate method based on their choice
+                switch (choice) 
                 {
                     case 1:
                         CreateTransaction();
@@ -47,7 +52,7 @@ namespace Question1
                         Console.WriteLine("Thank you. Application closed normally.");
                         break;
                     default:
-                        Console.WriteLine("Invalid option.");
+                        Console.WriteLine("Invalid option. Please try again.");
                         break;
                 }
 
@@ -55,12 +60,13 @@ namespace Question1
         }
         #endregion
 
-        #region Methods
+        #region Operational Methods
         /// <summary>
-        /// Creates a new sale transaction by taking user input.
+        /// Collects transaction data from the user and instantiates a SaleTransaction object.
         /// </summary>
         static void CreateTransaction()
         {
+            // Gather basic string data with null-coalescing to ensure no null values
             Console.Write("Enter Invoice No: ");
             string invoiceNo = Console.ReadLine() ?? "";
 
@@ -70,31 +76,34 @@ namespace Question1
             Console.Write("Enter Item Name: ");
             string itemName = Console.ReadLine() ?? "";
 
+            // Validate Quantity: must be a number and greater than zero
             Console.Write("Enter Quantity: ");
             if (!int.TryParse(Console.ReadLine(), out int quantity) || quantity <= 0)
             {
-                Console.WriteLine("Invalid quantity.");
+                Console.WriteLine("Error: Quantity must be a positive whole number.");
                 Console.ReadLine();
                 return;
             }
 
+            // Validate Purchase Amount: must be a decimal and greater than zero
             Console.Write("Enter Purchase Amount: ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal purchaseAmount) || purchaseAmount <= 0)
             {
-                Console.WriteLine("Invalid purchase amount.");
+                Console.WriteLine("Error: Purchase amount must be a positive numeric value.");
                 Console.ReadLine();
                 return;
             }
 
+            // Validate Selling Amount
             Console.Write("Enter Selling Amount: ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal sellingAmount))
             {
-                Console.WriteLine("Invalid selling amount.");
+                Console.WriteLine("Error: Selling amount must be a numeric value.");
                 Console.ReadLine();
                 return;
             }
 
-            // Create and store the transaction
+            // Object Initialization: Create and store the new transaction in memory
             LastTransaction = new SaleTransaction
             {
                 InvoiceNo = invoiceNo,
@@ -105,20 +114,22 @@ namespace Question1
                 SellingAmount = sellingAmount
             };
 
+            // Calculate business logic immediately upon creation
             LastTransaction.CalculateProfitOrLoss();
-            HasLastTransaction = true;
+            HasLastTransaction = true; // Set flag so other methods know data is available
 
-            Console.WriteLine("Transaction saved successfully.");
+            Console.WriteLine("Transaction saved successfully. Press Enter to return to menu.");
             Console.ReadLine();
         }
 
         /// <summary>
-        /// Displays the last transaction details.
+        /// Displays the stored transaction details if available.
         /// </summary>
         static void ViewLastTransaction()
         {
+            // Defensive check: ensure data exists before attempting to print
             if (!HasLastTransaction)
-                Console.WriteLine("No transaction available.");
+                Console.WriteLine("No transaction history found. Please create one first.");
             else
                 LastTransaction!.PrintTransaction();
 
@@ -126,14 +137,17 @@ namespace Question1
         }
 
         /// <summary>
-        /// Calculates and displays the profit or loss of the last transaction.
+        /// Recalculates and prints the profit/loss status of the current transaction.
         /// </summary>
         static void CalculateProfitOrLoss()
         {
             if (!HasLastTransaction)
-                Console.WriteLine("No transaction available.");
+            {
+                Console.WriteLine("No transaction available for calculation.");
+            }
             else
             {
+                // Ensure calculations are up to date before printing
                 LastTransaction!.CalculateProfitOrLoss();
                 LastTransaction.PrintTransaction();
             }
