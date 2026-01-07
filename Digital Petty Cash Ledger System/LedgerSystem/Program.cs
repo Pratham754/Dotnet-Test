@@ -25,9 +25,9 @@ public class Program
 
         #region Calculation & Reporting
         // Calculate Totals
-        decimal totalIn = incomeLedger.CalculateTotal();
-        decimal totalOut = expenseLedger.CalculateTotal();
-        decimal net = totalIn - totalOut;
+        decimal totalIn = TransactionCalculator.CalculateIncomeTotal(incomeLedger.GetAll());
+        decimal totalOut = TransactionCalculator.CalculateExpenseTotal(expenseLedger.GetAll());
+        decimal net = TransactionCalculator.CalculateNetBalance(incomeLedger.GetAll(), expenseLedger.GetAll());
 
 
         Console.WriteLine($"Total Income: ${totalIn}");
