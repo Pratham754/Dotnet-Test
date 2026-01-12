@@ -1,60 +1,54 @@
-namespace PayrollSystem.Models
+namespace PayRoll.Models
 {
     #region Employee Base Class
 
     /// <summary>
-    /// Represents a base employee with common properties and behaviors.
+    /// Base Abstract class defining the contract for all employee types.
+    /// Includes base properties like Id, Name, Type and abstract methods for polymorphism.
     /// </summary>
     public abstract class Employee
     {
         #region Properties
 
         public int Id { get; set; }
-
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Department { get; set; }
-        protected decimal BasePay { get; set; }
+        public string? Name { get; set; }
+        public string? Department { get; set; }
+        public string? Type { get; set; }
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Creates a new employee instance.
+        /// Protected constructor to restrict direct object creation.
+        /// Only child classes can call this.
         /// </summary>
-        public Employee(int id, string name, string email, string dept, decimal basePay)
+        protected Employee(int id, string name, string department, string employeeType)
         {
             Id = id;
             Name = name;
-            Email = email;
-            Department = dept;
-            BasePay = basePay;
+            Department = department;
+            Type = employeeType;
         }
 
         #endregion
 
-        #region Methods
+        #region Abstract Methods
 
         /// <summary>
-        /// Calculates the gross pay for the employee.
+        /// Calculates the net pay after deductions.
         /// </summary>
-        public abstract decimal CalculateGrossPay();
+        public abstract decimal CalculatePay();
 
         /// <summary>
-        /// Validates employee data.
+        /// Polymorphic helper to get Gross pay.
         /// </summary>
-        public virtual bool Validate(out string error)
-        {
-            if (BasePay < 0)
-            {
-                error = "Base pay cannot be negative.";
-                return false;
-            }
+        public abstract decimal GetGross();
 
-            error = string.Empty;
-            return true;
-        }
+        /// <summary>
+        /// Polymorphic helper to get Deductions.
+        /// </summary>
+        public abstract decimal GetDeduction();
 
         #endregion
     }

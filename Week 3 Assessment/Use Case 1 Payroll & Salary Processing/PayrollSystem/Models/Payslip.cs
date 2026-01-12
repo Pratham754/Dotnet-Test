@@ -1,34 +1,37 @@
-using System;
-
-namespace PayrollSystem.Models
+namespace PayRoll.Models
 {
     #region PaySlip Model
 
     /// <summary>
-    /// Represents a payroll slip generated for an employee.
+    /// Class having properties of Employee and their salary details.
+    /// Represents the final calculated output.
     /// </summary>
     public class PaySlip
     {
         #region Properties
 
-        public int EmployeeId { get; set; }
-        public string EmployeeName { get; set; }
-        public string EmployeeType { get; set; }
-        public decimal GrossPay { get; set; }
-        public decimal TaxDeduction { get; set; }
-        public decimal NetPay { get; set; }
-        public DateTime ProcessedDate { get; set; }
+        public int Id { get; }
+        public string? Name { get; }
+        public string? Type { get; }
+        public decimal Gross { get; }   // Total Pay before deduction
+        public decimal Deduction { get; }   // Tax amount
+        public decimal Net { get; }     // Total Pay after deduction
 
         #endregion
 
-        #region Methods
+        #region Constructors
 
         /// <summary>
-        /// Returns a formatted string representation of the payslip.
+        /// Public constructor to assign values to PaySlip properties.
         /// </summary>
-        public override string ToString()
+        public PaySlip(int id, string name, string type, decimal gross, decimal deduction, decimal net)
         {
-            return $"ID: {EmployeeId} | Name: {EmployeeName} | Net: {NetPay:C}";
+            Id = id;
+            Name = name;
+            Type = type;
+            Gross = gross;
+            Deduction = deduction;
+            Net = net;
         }
 
         #endregion
