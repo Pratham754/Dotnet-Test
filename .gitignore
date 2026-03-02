@@ -4,6 +4,7 @@
 *.suo
 *.cache
 *.log
+*.md
 
 # Build results
 bin/
@@ -16,8 +17,3 @@ obj/
 # OS files
 Thumbs.db
 .DS_Store
-
-github.csproj
-Training Test.sln
-*.csproj
-Training Test.csproj
