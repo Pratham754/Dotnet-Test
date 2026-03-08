@@ -1,0 +1,14 @@
+﻿using Microsoft.EntityFrameworkCore;
+using RepositoryPattern.Models;
+
+namespace RepositoryPattern.Data
+{
+    public class LibraryDbContext : DbContext
+    {
+        public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<Book> Books { get; set; }
+    }
+}
